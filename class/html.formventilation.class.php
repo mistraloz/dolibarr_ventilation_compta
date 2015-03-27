@@ -88,6 +88,7 @@ class FormVentilation extends Form
 		return $out;
 	}
 	
+	protected static $HTML_ID = array();
 	/**
 	 *	Return list of accounts with label by chart of accounts
 	 *
@@ -107,15 +108,24 @@ class FormVentilation extends Form
 		$sql .= " FROM " . MAIN_DB_PREFIX . "accountingaccount as aa";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "accounting_system as asy ON aa.fk_pcg_version = asy.pcg_version";
 		$sql .= " AND asy.rowid = " . $conf->global->CHARTOFACCOUNTS;
+		$sql .= " AND aa.entity = '{$conf->entity}'";
 		$sql .= " AND aa.active = 1";
 		$sql .= " ORDER BY aa.account_number";
 		
 		dol_syslog(get_class($this) . "::select_account sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
+
+			$htmlname_id = preg_replace('/\[\]/', '', $htmlname, 1, $count);
+			if($count) {
+				if(!isset(self::$HTML_ID[$htmlname_id])) {
+					self::$HTML_ID[$htmlname_id] = 0;
+				}
+				$htmlname_id.='_'.self::$HTML_ID[$htmlname_id]++;
+			}
 			
-			$out .= ajax_combobox($htmlname, $event);
-			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
+			$out .= ajax_combobox($htmlname_id, $event);
+			$out .= '<select id="' . $htmlname_id . '" class="flat" name="' . $htmlname . '">';
 			if ($showempty)
 				$out .= '<option value="-1"></option>';
 			$num = $this->db->num_rows($resql);
@@ -167,15 +177,24 @@ class FormVentilation extends Form
 		$sql .= " FROM " . MAIN_DB_PREFIX . "accountingaccount as a";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "accounting_system as b ON a.fk_pcg_version=b.pcg_version";
 		$sql .= " WHERE b.rowid=".$conf->global->CHARTOFACCOUNTS;
+		$sql .= " AND a.entity = '{$conf->entity}'";
 		$sql .= " ORDER BY pcg_type";
 		
 		dol_syslog(get_class($this) . "::select_pcgtype sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
+
+			$htmlname_id = preg_replace('/\[\]/', '', $htmlname, 1, $count);
+			if($count) {
+				if(!isset(self::$HTML_ID[$htmlname_id])) {
+					self::$HTML_ID[$htmlname_id] = 0;
+				}
+				$htmlname_id.='_'.self::$HTML_ID[$htmlname_id]++;
+			}
 			
-			$out .= ajax_combobox($htmlname, $event);
+			$out .= ajax_combobox($htmlname_id, $event);
 			
-			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
+			$out .= '<select id="' . $htmlname_id . '" class="flat" name="' . $htmlname . '">';
 			if ($showempty)
 				$out .= '<option value="-1"></option>';
 			$num = $this->db->num_rows($resql);
@@ -222,15 +241,24 @@ class FormVentilation extends Form
 		$sql .= " FROM " . MAIN_DB_PREFIX . "accountingaccount as a";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "accounting_system as b ON a.fk_pcg_version=b.pcg_version";
 		$sql .= " WHERE b.rowid=".$conf->global->CHARTOFACCOUNTS;
+		$sql .= " AND a.entity = '{$conf->entity}'";
 		$sql .= " ORDER BY pcg_subtype";
 		
 		dol_syslog(get_class($this) . "::select_pcgsubtype sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			
-			$out .= ajax_combobox($htmlname, $event);
+			$htmlname_id = preg_replace('/\[\]/', '', $htmlname, 1, $count);
+			if($count) {
+				if(!isset(self::$HTML_ID[$htmlname_id])) {
+					self::$HTML_ID[$htmlname_id] = 0;
+				}
+				$htmlname_id.='_'.self::$HTML_ID[$htmlname_id]++;
+			}
 			
-			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
+			$out .= ajax_combobox($htmlname_id, $event);
+			
+			$out .= '<select id="' . $htmlname_id . '" class="flat" name="' . $htmlname . '">';
 			if ($showempty)
 				$out .= '<option value="-1"></option>';
 			$num = $this->db->num_rows($resql);

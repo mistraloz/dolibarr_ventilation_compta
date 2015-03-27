@@ -123,6 +123,7 @@ $sql = "SELECT aa.rowid, aa.fk_pcg_version, aa.pcg_type, aa.pcg_subtype, aa.acco
 $sql .= " FROM " . MAIN_DB_PREFIX . "accountingaccount as aa, " . MAIN_DB_PREFIX . "accounting_system as asy";
 $sql .= " WHERE aa.fk_pcg_version = asy.pcg_version";
 $sql .= " AND asy.rowid = " . $pcgver;
+$sql .= " AND aa.entity = '{$conf->entity}'";
 
 if (strlen(trim($search_account))) {
 	$sql .= " AND aa.account_number like '%" . $search_account . "%'";

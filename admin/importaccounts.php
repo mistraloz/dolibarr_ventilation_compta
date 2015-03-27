@@ -1,4 +1,4 @@
-<?php
+<?php 
 /* 
  * Copyright (C) 2013-2014 Olivier Geffroy      <jeff@jeffinfo.com>
  * Copyright (C) 2013-2014 Alexandre Spangaro   <alexandre.spangaro@fidurex.fr> 
@@ -73,7 +73,7 @@ if ($_POST["action"] == 'import') {
 				$accounting = new AccountingAccount($db);
 				
 				$monLabel = GETPOST('intitule' . $maLigneCochee);
-				$monParentAccount = GETPOST('AccountParent' . $maLigneCochee);
+				$monParentAccount = GETPOST('accountparent' . $maLigneCochee);
 				$monType = GETPOST('pcgType' . $maLigneCochee);
 				$monSubType = GETPOST('pcgSubType' . $maLigneCochee);
 				
@@ -114,12 +114,12 @@ $offset = $limit * $page;
 
 $sql = "(SELECT p.rowid as product_id, p.accountancy_code_sell as accounting ";
 $sql .= " FROM  " . MAIN_DB_PREFIX . "product as p ";
-$sql .= " WHERE p.accountancy_code_sell >=0";
+$sql .= " WHERE p.accountancy_code_sell >=0 and p.accountancy_code_sell != ''";
 $sql .= " GROUP BY accounting ";
 $sql .= ")";
 $sql .= "UNION ALL(SELECT p.rowid as product_id, p.accountancy_code_buy as accounting ";
 $sql .= " FROM  " . MAIN_DB_PREFIX . "product as p ";
-$sql .= " WHERE p.accountancy_code_buy >=0";
+$sql .= " WHERE p.accountancy_code_buy >=0 AND p.accountancy_code_buy != ''";
 $sql .= " GROUP BY accounting ";
 $sql .= ") ";
 $sql .= " ORDER BY accounting DESC " . $db->plimit($limit + 1, $offset);
@@ -132,12 +132,12 @@ if ($result) {
 	print_barre_liste($langs->trans("ImportAccount"), $page, "importaccounts.php", "", $sortfield, $sortorder, '', $num_lignes);
 	
 	print '<table class="noborder" width="100%">';
-	print '<tr class="liste_titre"><td>' . $langs->trans("accountingaccount") . '</td>';
-	print '<td>' . $langs->trans("label") . '</td>';
-	print '<td>' . $langs->trans("parentaccount") . '</td>';
-	print '<td>' . $langs->trans("Pcgtype") . '</td>';
-	print '<td>' . $langs->trans("Pcgsubtype") . '</td>';
-	print '<td align="center">' . $langs->trans("Import") . '</td>';
+	print '<tr class="liste_titre"><td width="120">' . $langs->trans("Accountingaccount") . '</td>';
+	print '<td width="*">' . $langs->trans("Label") . '</td>';
+	print '<td width="200">' . $langs->trans("Accountparent") . '</td>';
+	print '<td width="200">' . $langs->trans("Pcgtype") . '</td>';
+	print '<td width="200">' . $langs->trans("Pcgsubtype") . '</td>';
+	print '<td align="center" width="40">' . $langs->trans("Import") . '</td>';
 	print '</tr>';
 	
 	$form = new Form($db);
@@ -150,6 +150,7 @@ if ($result) {
 	while ( $i < min($num_lignes, $limit) ) {
 		$objp = $db->fetch_object($result);
 		$var = ! $var;
+
 		print "<tr $bc[$var]>";
 		
 		print '<td align="left">';
@@ -157,24 +158,23 @@ if ($result) {
 		print '</td>';
 		
 		print '<td align="left">';
-		print '<input name="intitule" size="70" value="">';
+		print '<input name="intitule{$objp->accounting}" style="width:95%" value="">';
 		print '</td>';
 		
 		// Colonne choix du compte
 		print '<td>';
-		print $htmlacc->select_account($accounting->account_parent, 'AccountParent');
+		print $htmlacc->select_account($accounting->account_parent, 'AccountParent'.$objp->accounting);
 		print '</td>';
 		
 		print '<td>';
-		print $htmlacc->select_pcgtype($accounting->pcg_type, 'pcgType');
+		print $htmlacc->select_pcgtype($accounting->pcg_type, 'pcgType'.$objp->accounting);
 		print '</td>';
 		
 		print '<td>';
-		print $htmlacc->select_pcgsubtype($accounting->pcg_subtype, 'pcgSubType');
+		print $htmlacc->select_pcgsubtype($accounting->pcg_subtype, 'pcgSubType'.$objp->accounting);
 		print '</td>';
 		
 		// Colonne choix ligne a ventiler
-		
 		$checked = ('intitule' == 'O') ? ' checked=checked' : '';
 		
 		print '<td align="center">';
